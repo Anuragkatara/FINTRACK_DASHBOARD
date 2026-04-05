@@ -1,189 +1,14 @@
-// import { CAT_ICONS } from '../../data/constants';
-// import { fmtFull }   from '../../utils/helpers';
-
-// export default function Transactions({
-//   filtered, allCats,
-//   search, setSearch,
-//   fType,  setFType,
-//   fCat,   setFCat,
-//   sortCol, sortDir, sortBy,
-//   isAdmin, onEdit, onDelete,
-//   dark, theme,
-// }) {
-//   const { card, bdr, txt, txt2, txt3, inp, hov, div } = theme;
-
-//   const COLUMNS = [
-//     ['date',     'Date'],
-//     ['desc',     'Description'],
-//     ['category', 'Category'],
-//     ['type',     'Type'],
-//     ['amount',   'Amount'],
-//   ];
-
-//   return (
-//     <>
-     
-//       <div className={`rounded-2xl p-4 border ${card}`}>
-//         <div className="flex flex-wrap gap-3">
-//           {/* Search */}
-//           <div className="flex-1 min-w-[180px]">
-//             <input
-//               value={search}
-//               onChange={(e) => setSearch(e.target.value)}
-//               placeholder="Search transactions..."
-//               className={`w-full text-sm rounded-xl px-3.5 py-2 border focus:outline-none focus:ring-2 focus:ring-emerald-500 ${inp}`}
-//             />
-//           </div>
-
-         
-//           <select
-//             value={fType}
-//             onChange={(e) => setFType(e.target.value)}
-//             className={`text-sm rounded-xl px-3 py-2 border focus:outline-none focus:ring-2 focus:ring-emerald-500 ${inp}`}
-//           >
-//             <option value="all">All types</option>
-//             <option value="income">Income</option>
-//             <option value="expense">Expense</option>
-//           </select>
-
-         
-//           <select
-//             value={fCat}
-//             onChange={(e) => setFCat(e.target.value)}
-//             className={`text-sm rounded-xl px-3 py-2 border focus:outline-none focus:ring-2 focus:ring-emerald-500 ${inp}`}
-//           >
-//             <option value="all">All categories</option>
-//             {allCats.map((c) => <option key={c}>{c}</option>)}
-//           </select>
-//         </div>
-
-//         <p className={`text-xs mt-2 ${txt2}`}>
-//           {filtered.length} result{filtered.length !== 1 ? 's' : ''}
-//         </p>
-//       </div>
-
-//       <div className={`rounded-2xl border overflow-hidden ${card}`}>
-//         {filtered.length === 0 ? (
-//           <div className="py-20 text-center">
-//             <p className="text-4xl mb-3">🔍</p>
-//             <p className={`text-sm ${txt2}`}>No transactions found</p>
-//           </div>
-//         ) : (
-//           <div className="overflow-x-auto">
-//             <table className="w-full">
-//               <thead>
-//                 <tr className={`border-b ${bdr}`}>
-//                   {COLUMNS.map(([col, label]) => (
-//                     <th
-//                       key={col}
-//                       onClick={() => sortBy(col)}
-//                       className={`text-left px-4 py-3 text-xs font-medium uppercase tracking-wide cursor-pointer select-none whitespace-nowrap ${txt2} hover:text-emerald-400 transition-colors`}
-//                     >
-//                       {label}
-//                       {sortCol === col ? (sortDir === 'asc' ? ' ↑' : ' ↓') : ''}
-//                     </th>
-//                   ))}
-//                   {isAdmin && (
-//                     <th className={`px-4 py-3 text-xs font-medium uppercase tracking-wide text-right ${txt2}`}>
-//                       Actions
-//                     </th>
-//                   )}
-//                 </tr>
-//               </thead>
-
-//               <tbody>
-//                 {filtered.map((tx) => (
-//                   <tr key={tx.id} className={`border-b ${bdr} transition-colors ${hov} group`}>
-//                     {/* Date */}
-//                     <td className={`px-4 py-3 text-xs whitespace-nowrap ${txt2}`}>{tx.date}</td>
-
-                    
-//                     <td className="px-4 py-3">
-//                       <div className="flex items-center gap-2">
-//                         <span className="text-base">{CAT_ICONS[tx.category] || '📦'}</span>
-//                         <span className={`text-sm font-medium ${txt}`}>{tx.desc}</span>
-//                       </div>
-//                     </td>
-
-//                     {/* Category badge */}
-//                     <td className="px-4 py-3">
-//                       <span
-//                         className={`text-xs font-medium px-2.5 py-1 rounded-full ${
-//                           dark ? 'bg-slate-800 text-slate-300' : 'bg-slate-100 text-gray-600'
-//                         }`}
-//                       >
-//                         {tx.category}
-//                       </span>
-//                     </td>
-
-                 
-//                     <td className="px-4 py-3">
-//                       <span
-//                         className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
-//                           tx.type === 'income'
-//                             ? dark ? 'bg-emerald-900/50 text-emerald-400' : 'bg-emerald-50 text-emerald-700'
-//                             : dark ? 'bg-rose-900/40 text-rose-400'      : 'bg-rose-50 text-rose-700'
-//                         }`}
-//                       >
-//                         {tx.type}
-//                       </span>
-//                     </td>
-
-                   
-//                     <td
-//                       className={`px-4 py-3 text-sm font-bold whitespace-nowrap ${
-//                         tx.type === 'income' ? 'text-emerald-500' : 'text-rose-500'
-//                       }`}
-//                     >
-//                       {tx.type === 'income' ? '+' : '-'}{fmtFull(tx.amount)}
-//                     </td>
-
-                    
-//                     {isAdmin && (
-//                       <td className="px-4 py-3 text-right">
-//                         <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-//                           <button
-//                             onClick={() => onEdit(tx)}
-//                             className={`text-xs px-2.5 py-1 rounded-lg font-medium transition-colors ${
-//                               dark
-//                                 ? 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-//                                 : 'bg-slate-100 text-gray-600 hover:bg-slate-200'
-//                             }`}
-//                           >
-//                             Edit
-//                           </button>
-//                           <button
-//                             onClick={() => onDelete(tx.id)}
-//                             className={`text-xs px-2.5 py-1 rounded-lg font-medium transition-colors ${
-//                               dark
-//                                 ? 'bg-rose-900/50 text-rose-400 hover:bg-rose-900'
-//                                 : 'bg-rose-50 text-rose-600 hover:bg-rose-100'
-//                             }`}
-//                           >
-//                             Del
-//                           </button>
-//                         </div>
-//                       </td>
-//                     )}
-//                   </tr>
-//                 ))}
-//               </tbody>
-//             </table>
-//           </div>
-//         )}
-//       </div>
-//     </>
-//   );
-// }
 import { useState } from 'react';
 import { CAT_ICONS } from '../../data/constants';
 import { fmtFull }   from '../../utils/helpers';
 
 export default function Transactions({
   filtered, allCats,
-  search, setSearch,
-  fType,  setFType,
-  fCat,   setFCat,
+  search,     setSearch,
+  fType,      setFType,
+  fCat,       setFCat,
+  fDateFrom,  setFDateFrom,
+  fDateTo,    setFDateTo,
   sortCol, sortDir, sortBy,
   isAdmin, onEdit, onDelete,
   dark, theme,
@@ -200,15 +25,21 @@ export default function Transactions({
   ];
 
   // Count how many filters are active
-  const activeFilterCount = (fType !== 'all' ? 1 : 0) + (fCat !== 'all' ? 1 : 0);
+  const activeFilterCount =
+    (fType !== 'all' ? 1 : 0) +
+    (fCat  !== 'all' ? 1 : 0) +
+    (fDateFrom      ? 1 : 0) +
+    (fDateTo        ? 1 : 0);
 
   const clearAll = () => {
     setSearch('');
     setFType('all');
     setFCat('all');
+    setFDateFrom('');
+    setFDateTo('');
   };
 
-  const hasAnyFilter = search || fType !== 'all' || fCat !== 'all';
+  const hasAnyFilter = search || fType !== 'all' || fCat !== 'all' || fDateFrom || fDateTo;
 
   return (
     <>
@@ -273,16 +104,16 @@ export default function Transactions({
         {/* Expandable filter panel */}
         {showFilters && (
           <div className={`px-4 pb-4 pt-0 border-t ${bdr}`}>
-            <div className="flex flex-wrap gap-3 pt-4">
+            <div className="flex flex-wrap gap-4 pt-4">
 
-              {/* Type filter — pill buttons */}
+              {/* Type filter */}
               <div>
                 <p className={`text-xs font-medium mb-2 ${txt2}`}>Type</p>
                 <div className="flex gap-1.5">
                   {[
-                    { val: 'all',     label: 'All'     },
-                    { val: 'income',  label: '↑ Income'  },
-                    { val: 'expense', label: '↓ Expense' },
+                    { val: 'all',     label: 'All'        },
+                    { val: 'income',  label: '↑ Income'   },
+                    { val: 'expense', label: '↓ Expense'  },
                   ].map(({ val, label }) => (
                     <button
                       key={val}
@@ -305,10 +136,9 @@ export default function Transactions({
                 </div>
               </div>
 
-              {/* Divider */}
               <div className={`hidden md:block w-px self-stretch ${dark ? 'bg-slate-800' : 'bg-slate-200'}`} />
 
-              {/* Category filter — dropdown */}
+              {/* Category filter */}
               <div>
                 <p className={`text-xs font-medium mb-2 ${txt2}`}>Category</p>
                 <select
@@ -325,7 +155,28 @@ export default function Transactions({
                 </select>
               </div>
 
-              {/* Divider */}
+              <div className={`hidden md:block w-px self-stretch ${dark ? 'bg-slate-800' : 'bg-slate-200'}`} />
+
+              {/* Date range filter */}
+              <div>
+                <p className={`text-xs font-medium mb-2 ${txt2}`}>Date Range</p>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="date"
+                    value={fDateFrom}
+                    onChange={(e) => setFDateFrom(e.target.value)}
+                    className={`text-xs rounded-xl px-2.5 py-1.5 border focus:outline-none focus:ring-2 focus:ring-emerald-500 ${inp}`}
+                  />
+                  <span className={`text-xs ${txt2}`}>to</span>
+                  <input
+                    type="date"
+                    value={fDateTo}
+                    onChange={(e) => setFDateTo(e.target.value)}
+                    className={`text-xs rounded-xl px-2.5 py-1.5 border focus:outline-none focus:ring-2 focus:ring-emerald-500 ${inp}`}
+                  />
+                </div>
+              </div>
+
               <div className={`hidden md:block w-px self-stretch ${dark ? 'bg-slate-800' : 'bg-slate-200'}`} />
 
               {/* Sort shortcuts */}
@@ -359,7 +210,7 @@ export default function Transactions({
           </div>
         )}
 
-        {/* Result count + active filters summary */}
+        {/* Result count + active filter chips */}
         <div className={`px-4 py-2.5 border-t ${bdr} flex items-center justify-between`}>
           <p className={`text-xs ${txt2}`}>
             <span className="font-semibold text-emerald-500">{filtered.length}</span>{' '}
@@ -367,8 +218,7 @@ export default function Transactions({
             {hasAnyFilter && ' (filtered)'}
           </p>
 
-          {/* Active filter chips */}
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 flex-wrap">
             {fType !== 'all' && (
               <span
                 className={`text-xs px-2 py-0.5 rounded-full font-medium flex items-center gap-1 ${
@@ -385,6 +235,12 @@ export default function Transactions({
               <span className={`text-xs px-2 py-0.5 rounded-full font-medium flex items-center gap-1 ${dark ? 'bg-slate-700 text-slate-300' : 'bg-slate-100 text-gray-600'}`}>
                 {CAT_ICONS[fCat] || '📦'} {fCat}
                 <button onClick={() => setFCat('all')} className="hover:opacity-70">×</button>
+              </span>
+            )}
+            {(fDateFrom || fDateTo) && (
+              <span className={`text-xs px-2 py-0.5 rounded-full font-medium flex items-center gap-1 ${dark ? 'bg-slate-700 text-slate-300' : 'bg-slate-100 text-gray-600'}`}>
+                📅 {fDateFrom || '…'} → {fDateTo || '…'}
+                <button onClick={() => { setFDateFrom(''); setFDateTo(''); }} className="hover:opacity-70">×</button>
               </span>
             )}
           </div>
@@ -453,7 +309,7 @@ export default function Transactions({
                       </div>
                     </td>
 
-                    {/* Category badge */}
+                    {/* Category badge — click to filter */}
                     <td className="px-4 py-3">
                       <button
                         onClick={() => { setFCat(tx.category); setShowFilters(true); }}
@@ -467,7 +323,7 @@ export default function Transactions({
                       </button>
                     </td>
 
-                    {/* Type badge */}
+                    {/* Type badge — click to filter */}
                     <td className="px-4 py-3">
                       <button
                         onClick={() => { setFType(tx.type); setShowFilters(true); }}

@@ -2,6 +2,8 @@ import { useState, useMemo } from 'react';
 import { SEED_TRANSACTIONS } from '../data/constants';
 import { catColor } from '../utils/helpers';
 
+const MONTH_LABELS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
 /**
  * Manages all transaction state: CRUD, filters, sorting, and derived stats.
  */
@@ -18,6 +20,8 @@ export function useTransactions() {
   const [search,  setSearch]  = useState('');
   const [fType,   setFType]   = useState('all');
   const [fCat,    setFCat]    = useState('all');
+  const [fDateFrom, setFDateFrom] = useState('');
+  const [fDateTo,   setFDateTo]   = useState('');
   const [sortCol, setSortCol] = useState('date');
   const [sortDir, setSortDir] = useState('desc');
 
@@ -53,13 +57,15 @@ export function useTransactions() {
     if (search)        res = res.filter((t) => t.desc.toLowerCase().includes(search.toLowerCase()) || t.category.toLowerCase().includes(search.toLowerCase()));
     if (fType !== 'all') res = res.filter((t) => t.type === fType);
     if (fCat  !== 'all') res = res.filter((t) => t.category === fCat);
+    if (fDateFrom)     res = res.filter((t) => t.date >= fDateFrom);
+    if (fDateTo)       res = res.filter((t) => t.date <= fDateTo);
     res.sort((a, b) => {
       const va = sortCol === 'amount' ? +a[sortCol] : a[sortCol];
       const vb = sortCol === 'amount' ? +b[sortCol] : b[sortCol];
       return sortDir === 'asc' ? (va > vb ? 1 : -1) : (va < vb ? 1 : -1);
     });
     return res;
-  }, [txns, search, fType, fCat, sortCol, sortDir]);
+  }, [txns, search, fType, fCat, fDateFrom, fDateTo, sortCol, sortDir]);
 
   // ── Aggregate stats ──────────────────────────────────────────
   const totalIncome  = txns.filter((t) => t.type === 'income').reduce((s, t) => s + t.amount, 0);
@@ -67,15 +73,25 @@ export function useTransactions() {
   const balance      = totalIncome - totalExpense;
   const savingsRate  = totalIncome > 0 ? ((balance / totalIncome) * 100).toFixed(1) : '0.0';
 
-  const monthlyData = useMemo(() =>
-    ['Jan', 'Feb', 'Mar'].map((label, mi) => {
-      const m = txns.filter((t) => new Date(t.date).getMonth() === mi);
+  // ── Dynamic monthly data (last 6 months with data) ──────────
+  const monthlyData = useMemo(() => {
+    // Collect all unique year-month pairs present in transactions
+    const monthSet = new Set(txns.map((t) => t.date.slice(0, 7))); // "YYYY-MM"
+    const sorted   = [...monthSet].sort();
+    // Take up to 6 most recent months
+    const recent   = sorted.slice(-6);
+
+    return recent.map((ym) => {
+      const [y, m] = ym.split('-').map(Number);
+      const monthTxns = txns.filter((t) => t.date.startsWith(ym));
       return {
-        label,
-        income:  m.filter((t) => t.type === 'income').reduce((s, t) => s + t.amount, 0),
-        expense: m.filter((t) => t.type === 'expense').reduce((s, t) => s + t.amount, 0),
+        label:   MONTH_LABELS[m - 1],
+        yearMonth: ym,
+        income:  monthTxns.filter((t) => t.type === 'income').reduce((s, t)  => s + t.amount, 0),
+        expense: monthTxns.filter((t) => t.type === 'expense').reduce((s, t) => s + t.amount, 0),
       };
-    }), [txns]);
+    });
+  }, [txns]);
 
   const catBreakdown = useMemo(() => {
     const map = {};
@@ -100,6 +116,8 @@ export function useTransactions() {
     search, setSearch,
     fType,  setFType,
     fCat,   setFCat,
+    fDateFrom, setFDateFrom,
+    fDateTo,   setFDateTo,
     sortCol, sortDir, sortBy,
     addTransaction,
     updateTransaction,

@@ -106,9 +106,11 @@ export default function App() {
               <Transactions
                 filtered={txState.filtered}
                 allCats={txState.allCats}
-                search={txState.search}   setSearch={txState.setSearch}
-                fType={txState.fType}     setFType={txState.setFType}
-                fCat={txState.fCat}       setFCat={txState.setFCat}
+                search={txState.search}         setSearch={txState.setSearch}
+                fType={txState.fType}           setFType={txState.setFType}
+                fCat={txState.fCat}             setFCat={txState.setFCat}
+                fDateFrom={txState.fDateFrom}   setFDateFrom={txState.setFDateFrom}
+                fDateTo={txState.fDateTo}       setFDateTo={txState.setFDateTo}
                 sortCol={txState.sortCol}
                 sortDir={txState.sortDir}
                 sortBy={txState.sortBy}

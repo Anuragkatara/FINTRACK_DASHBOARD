@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Modal from './ui/Modal';
 import { CATEGORIES } from '../data/constants';
 import { todayStr } from '../utils/helpers';
@@ -14,25 +14,29 @@ const EMPTY_FORM = {
 export default function TransactionModal({ open, onClose, onSave, editTx, dark, theme }) {
   const { txt, txt2, inp } = theme;
 
-  const [form, setForm] = useState(() =>
-    editTx
-      ? { desc: editTx.desc, amount: editTx.amount, category: editTx.category, type: editTx.type, date: editTx.date }
-      : { ...EMPTY_FORM }
-  );
+  const [form, setForm] = useState({ ...EMPTY_FORM });
 
-  
-  const handleOpen = () => {
-    setForm(
-      editTx
-        ? { desc: editTx.desc, amount: editTx.amount, category: editTx.category, type: editTx.type, date: editTx.date }
-        : { ...EMPTY_FORM }
-    );
-  };
+  // Reset form whenever the modal opens or the target transaction changes
+  useEffect(() => {
+    if (open) {
+      setForm(
+        editTx
+          ? {
+              desc:     editTx.desc,
+              amount:   String(editTx.amount),
+              category: editTx.category,
+              type:     editTx.type,
+              date:     editTx.date,
+            }
+          : { ...EMPTY_FORM, date: todayStr() }
+      );
+    }
+  }, [open, editTx]);
 
   const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
 
   const handleSave = () => {
-    if (!form.desc || !form.amount) return;
+    if (!form.desc.trim() || !form.amount) return;
     onSave(form, editTx?.id ?? null);
     onClose();
   };
@@ -44,10 +48,9 @@ export default function TransactionModal({ open, onClose, onSave, editTx, dark, 
       </h2>
 
       <div className="space-y-4">
-      
         {[
           { label: 'Description', key: 'desc',   type: 'text',   placeholder: 'e.g. Grocery Store' },
-          { label: 'Amount',      key: 'amount',  type: 'number', placeholder: '0.00'               },
+          { label: 'Amount (₹)',  key: 'amount',  type: 'number', placeholder: '0.00'               },
           { label: 'Date',        key: 'date',    type: 'date',   placeholder: ''                   },
         ].map((f) => (
           <div key={f.key}>
@@ -57,12 +60,13 @@ export default function TransactionModal({ open, onClose, onSave, editTx, dark, 
               value={form[f.key]}
               onChange={set(f.key)}
               placeholder={f.placeholder}
+              min={f.type === 'number' ? '0' : undefined}
+              step={f.type === 'number' ? '0.01' : undefined}
               className={`w-full text-sm rounded-xl px-3.5 py-2.5 border focus:outline-none focus:ring-2 focus:ring-emerald-500 ${inp}`}
             />
           </div>
         ))}
 
-    
         <div>
           <label className={`block text-xs font-medium mb-1.5 ${txt2}`}>Category</label>
           <select
@@ -74,7 +78,6 @@ export default function TransactionModal({ open, onClose, onSave, editTx, dark, 
           </select>
         </div>
 
-       
         <div>
           <label className={`block text-xs font-medium mb-1.5 ${txt2}`}>Type</label>
           <div className="flex gap-2">
@@ -99,7 +102,6 @@ export default function TransactionModal({ open, onClose, onSave, editTx, dark, 
         </div>
       </div>
 
-    
       <div className="flex gap-2 mt-6">
         <button
           onClick={onClose}
@@ -113,7 +115,8 @@ export default function TransactionModal({ open, onClose, onSave, editTx, dark, 
         </button>
         <button
           onClick={handleSave}
-          className="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold transition-colors"
+          disabled={!form.desc.trim() || !form.amount}
+          className="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-semibold transition-colors"
         >
           {editTx ? 'Update' : 'Add'}
         </button>
