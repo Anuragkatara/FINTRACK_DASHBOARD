@@ -1,0 +1,52 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Dependency directories
+node_modules
+dist
+dist-ssr
+
+# Vite files
+.vite
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Build output
+build
+
+# Cache directories
+.cache
+.temp
+.tmp
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# OS files
+Thumbs.db
+
+# Optional: lock files (uncomment if needed)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# Coverage directory
+coverage
+
+# TypeScript
+*.tsbuildinfo
