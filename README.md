@@ -6,7 +6,7 @@ A clean, interactive finance dashboard built with **React 18 + Vite + Tailwind C
 
 ## 🔗 Live Demo
 
-> **Deployed on Vercel:** _https://fintrack-dashboard-9446ayq62-anuragkataras-projects.vercel.app/_
+> **Deployed on Vercel:** _https://fintrack-dashboard-brown.vercel.app/_
 
 ---
 
